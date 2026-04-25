@@ -1,60 +1,60 @@
-# RailEase
-An integrated railway passenger facilitation system providing real-time train updates, ticket booking, and seamless travel services.
-# 🚆 RailEase - Integrated Railway Passenger Facilitation System
+﻿# Rail Super App
 
-## 📌 Overview
-RailEase is a full-stack web application designed to enhance the railway travel experience by providing passengers with real-time updates, ticket booking services, and essential travel-related features in one platform.
+A beginner-friendly full-stack rail utility app built with:
+- HTML5
+- CSS3
+- JavaScript
+- Node.js
+- Express
+- MongoDB
 
----
+## Features
+- User signup and login with JWT
+- Dashboard with quick actions and mock upcoming journeys
+- Train search and booking UI
+- PNR status checker
+- Live train tracking mock UI
+- Food ordering with cart using localStorage
+- Rail help complaint form
+- Dark mode and mock notifications
 
-## 🎯 Features
-- 🔍 Real-time train status tracking  
-- 🎫 Online ticket booking system  
-- 📅 Train schedule and availability  
-- 🔔 Notifications & alerts (delays, platform changes)  
-- 👤 User authentication & profile management  
-- 💳 Secure payment integration  
-- 📊 Admin dashboard for management  
+## Project Structure
+```text
+rail-super-app/
+  frontend/
+    index.html
+    login.html
+    dashboard.html
+    styles.css
+    script.js
+  backend/
+    server.js
+    routes/
+    models/
+    controllers/
+    data/
+  package.json
+  .env.example
+```
 
----
+## How to Run Locally
+1. Open a terminal in `D:\c++.cpp\rail-super-app`
+2. Install dependencies:
+   `npm install`
+3. Copy environment variables:
+   `copy .env.example .env`
+4. Make sure MongoDB is running locally on:
+   `mongodb://127.0.0.1:27017/rail-super-app`
+5. Start the app:
+   `npm start`
+6. Open your browser and visit:
+   `http://localhost:5000`
 
-## 🛠️ Tech Stack
-### Frontend
-- HTML, CSS, JavaScript
-- React.js (optional)
+## Helpful Development Commands
+- Start normally: `npm start`
+- Start in watch mode: `npm run dev`
 
-### Backend
-- Node.js / Java / Spring Boot
-
-### Database
-- MySQL / MongoDB
-
----
-
-## 🚀 How It Works
-1. User registers or logs into the system  
-2. Searches for trains and checks availability  
-3. Books tickets online  
-4. Receives real-time updates and notifications  
-
----
-
-## 📂 Project Structure
-/frontend
-/backend
-/database
-/docs
-
-
----
-
-## 🔐 Future Enhancements
-- AI-based delay prediction  
-- Chatbot support  
-- Mobile app integration  
-- Multi-language support  
-
----
-
-## 🤝 Contribution
-Contributions are welcome! Feel free to fork this repo and submit a pull request.
+## Notes
+- Train, PNR, tracking, notifications, and food status use mock data.
+- User accounts, bookings, and complaints use MongoDB.
+- Cart, theme, and login session are stored in localStorage on the frontend.

@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rail Super App</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="landing">
+    <div class="app-shell">
+      <header class="topbar topbar--public">
+        <a class="brand" href="./index.html">
+          <span class="brand-mark">R</span>
+          <div>
+            <strong>Rail Super App</strong>
+            <small>Travel, food, help, and live rail tools</small>
+          </div>
+        </a>
+        <nav class="nav nav--public">
+          <a href="./index.html">Home</a>
+          <a href="./login.html">Login</a>
+          <!-- <button id="themeToggle" class="ghost-btn" type="button">Dark Mode</button> -->
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero hero-grid">
+          <div class="hero-copy">
+            <span class="pill">Modern rail experience</span>
+            <h1>Book trains, track journeys, order food, and get rail help in one place.</h1>
+            <p>
+              A clean RailOne-inspired super app with fast booking flows, clear status updates,
+              and a mobile-friendly dashboard.
+            </p>
+            <div class="hero-actions">
+              <a class="primary-btn" href="./login.html">Get Started</a>
+              <a class="secondary-btn" href="./dashboard.html">Explore Demo</a>
+            </div>
+            <div class="stats-grid">
+              <article class="stat-card card">
+                <strong>250+</strong>
+                <span>Daily mock services</span>
+              </article>
+              <article class="stat-card card">
+                <strong>5-in-1</strong>
+                <span>Booking, PNR, tracking, food, help</span>
+              </article>
+              <article class="stat-card card">
+                <strong>24/7</strong>
+                <span>Instant assistance workflow</span>
+              </article>
+            </div>
+          </div>
+
+          <div class="hero-panel card">
+            <div class="mini-app">
+              <div class="mini-app__top">
+                <span>Upcoming Journey</span>
+                <strong>Delhi to Chandigarh</strong>
+              </div>
+              <div class="route-line">
+                <div>
+                  <h3>07:40</h3>
+                  <p>NDLS</p>
+                </div>
+                <div class="route-track"></div>
+                <div>
+                  <h3>11:05</h3>
+                  <p>CDG</p>
+                </div>
+              </div>
+              <div class="mini-actions">
+                <span class="badge success">Confirmed</span>
+                <span class="badge">Coach C2 Seat 18</span>
+              </div>
+              <div class="mini-feature-grid">
+                <div class="mini-feature">Track Train</div>
+                <div class="mini-feature">Order Food</div>
+                <div class="mini-feature">Check PNR</div>
+                <div class="mini-feature">Rail Help</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-heading">
+            <div>
+              <span class="pill">Why this app</span>
+              <h2>Designed for clarity, speed, and daily use</h2>
+            </div>
+          </div>
+          <div class="feature-grid">
+            <article class="card feature-card">
+              <h3>Simple Booking</h3>
+              <p>Search trains with clean filters, view mock seat availability, and finish bookings fast.</p>
+            </article>
+            <article class="card feature-card">
+              <h3>Live Travel Tools</h3>
+              <p>Check PNR, view train status, and see a simple location tracker without clutter.</p>
+            </article>
+            <article class="card feature-card">
+              <h3>Food + Help</h3>
+              <p>Order onboard meals, manage a cart, and raise support requests from one dashboard.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="./script.js"></script>
+  </body>
+</html>

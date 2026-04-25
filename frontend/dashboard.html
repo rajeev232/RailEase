@@ -1,0 +1,248 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | Rail Super App</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="dashboard">
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <a class="brand brand--stacked" href="./dashboard.html">
+          <span class="brand-mark">R</span>
+          <div>
+            <strong>Rail Super App</strong>
+            <small>Super travel console</small>
+          </div>
+        </a>
+
+        <nav class="side-nav">
+          <a href="#quickActions">Quick Actions</a>
+          <a href="#searchSection">Book Ticket</a>
+          <a href="#pnrSection">PNR Status</a>
+          <a href="#trackSection">Track Train</a>
+          <a href="#foodSection">Order Food</a>
+          <a href="#helpSection">Rail Help</a>
+        </nav>
+
+        <div class="sidebar-tools">
+          <!-- <button id="themeToggle" class="ghost-btn full-width" type="button">Dark Mode</button> -->
+          <button id="logoutBtn" class="secondary-btn full-width" type="button">Logout</button>
+        </div>
+      </aside>
+
+      <main class="dashboard-main">
+        <header class="page-head">
+          <div>
+            <p class="eyebrow">Dashboard</p>
+            <h1 id="welcomeTitle">Good to see you</h1>
+            <span class="subtle-text">Manage journeys, food, train updates, and support from one place.</span>
+          </div>
+          <div class="top-actions">
+            <button id="notifyBtn" class="ghost-btn" type="button">Notifications</button>
+          </div>
+        </header>
+
+        <section id="quickActions" class="section">
+          <div class="section-heading">
+            <div>
+              <span class="pill">Quick actions</span>
+              <h2>Everything you need before boarding</h2>
+            </div>
+          </div>
+          <div class="action-grid">
+            <button class="action-card" data-target="#searchSection">Book Ticket</button>
+            <button class="action-card" data-target="#pnrSection">Check PNR</button>
+            <button class="action-card" data-target="#trackSection">Track Train</button>
+            <button class="action-card" data-target="#foodSection">Order Food</button>
+            <button class="action-card" data-target="#helpSection">Rail Help</button>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-heading">
+            <div>
+              <span class="pill">Upcoming journeys</span>
+              <h2>Your next trips</h2>
+            </div>
+          </div>
+          <div id="journeyCards" class="journey-grid"></div>
+        </section>
+
+        <section id="searchSection" class="section">
+          <div class="section-heading">
+            <div>
+              <span class="pill">Train booking</span>
+              <h2>Find trains and reserve a seat</h2>
+            </div>
+          </div>
+          <div class="card">
+            <form id="trainSearchForm" class="grid-form">
+              <label>
+                Source
+                <input type="text" name="source" placeholder="Mumbai" required />
+              </label>
+              <label>
+                Destination
+                <input type="text" name="destination" placeholder="Delhi" required />
+              </label>
+              <label>
+                Date
+                <input type="date" name="date" required />
+              </label>
+              <button class="primary-btn align-end" type="submit">Search Train</button>
+            </form>
+          </div>
+          <div id="trainResults" class="results-grid"></div>
+        </section>
+
+        <section id="bookingSection" class="section">
+          <div class="section-heading">
+            <div>
+              <span class="pill">Seat selection</span>
+              <h2>Choose your coach seat</h2>
+            </div>
+          </div>
+          <div class="booking-layout">
+            <div class="card">
+              <form id="bookingForm" class="form">
+                <input type="hidden" id="selectedTrainId" />
+                <label>
+                  Passenger Name
+                  <input type="text" id="passengerName" placeholder="Enter passenger name" required />
+                </label>
+                <label>
+                  Age
+                  <input type="number" id="passengerAge" min="1" max="120" placeholder="Enter age" required />
+                </label>
+                <label>
+                  Journey Date
+                  <input type="date" id="journeyDate" required />
+                </label>
+                <div>
+                  <span class="field-label">Available Seats</span>
+                  <div id="seatMap" class="seat-map"></div>
+                </div>
+                <button class="primary-btn full-width" type="submit">Confirm Booking</button>
+              </form>
+            </div>
+            <div class="card summary-card">
+              <h3>Selected Train</h3>
+              <div id="selectedTrainSummary" class="empty-state">Search and choose a train to start booking.</div>
+              <div id="bookingConfirmation" class="confirmation-box hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="pnrSection" class="section">
+          <div class="section-heading">
+            <div>
+              <span class="pill">PNR status</span>
+              <h2>Check reservation details</h2>
+            </div>
+          </div>
+          <div class="card">
+            <form id="pnrForm" class="inline-form">
+              <input type="text" id="pnrInput" placeholder="Enter 10-digit PNR number" required />
+              <button class="primary-btn" type="submit">Check PNR</button>
+            </form>
+            <div id="pnrResult" class="status-box empty-state">PNR details will appear here.</div>
+          </div>
+        </section>
+
+        <section id="trackSection" class="section">
+          <div class="section-heading">
+            <div>
+              <span class="pill">Live tracking</span>
+              <h2>See the latest train position</h2>
+            </div>
+          </div>
+          <div class="tracking-grid">
+            <div class="card">
+              <form id="trackForm" class="inline-form">
+                <input type="text" id="trackTrainNumber" placeholder="Enter train number" required />
+                <button class="primary-btn" type="submit">Track</button>
+              </form>
+              <div id="trackingResult" class="status-box empty-state">Tracking details will appear here.</div>
+            </div>
+            <div class="card map-card">
+              <div class="map-placeholder">
+                <div class="map-line"></div>
+                <div class="map-station map-station--start">Source</div>
+                <div class="map-station map-station--middle">Current</div>
+                <div class="map-station map-station--end">Destination</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="foodSection" class="section">
+          <div class="section-heading">
+            <div>
+              <span class="pill">Food ordering</span>
+              <h2>Pre-order meals for your journey</h2>
+            </div>
+          </div>
+          <div class="food-layout">
+            <div id="foodList" class="food-grid"></div>
+            <div class="card cart-card">
+              <div class="cart-head">
+                <h3>Food Cart</h3>
+                <span id="cartCount" class="badge">0 items</span>
+              </div>
+              <div id="cartItems" class="cart-items empty-state">Your cart is empty.</div>
+              <form id="foodOrderForm" class="form compact-form">
+                <label>
+                  Customer Name
+                  <input type="text" id="foodCustomerName" placeholder="Enter customer name" required />
+                </label>
+                <label>
+                  Train Number
+                  <input type="text" id="foodTrainNumber" placeholder="Enter train number" required />
+                </label>
+                <button class="primary-btn full-width" type="submit">Place Food Order</button>
+              </form>
+              <div id="foodOrderStatus" class="status-box empty-state">Order status will appear here.</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="helpSection" class="section">
+          <div class="section-heading">
+            <div>
+              <span class="pill">Rail help</span>
+              <h2>Raise a complaint or request support</h2>
+            </div>
+          </div>
+          <div class="help-layout">
+            <div class="card">
+              <form id="helpForm" class="form">
+                <label>
+                  Complaint Category
+                  <select id="helpCategory" required></select>
+                </label>
+                <label>
+                  Train Number
+                  <input type="text" id="helpTrainNumber" placeholder="Enter train number" required />
+                </label>
+                <label>
+                  Message
+                  <textarea id="helpMessage" rows="4" placeholder="Describe the issue" required></textarea>
+                </label>
+                <button class="primary-btn" type="submit">Submit Complaint</button>
+              </form>
+            </div>
+            <div class="card">
+              <h3>Complaint Status</h3>
+              <div id="helpStatus" class="status-box empty-state">Complaint updates will appear here.</div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="./script.js"></script>
+  </body>
+</html>
