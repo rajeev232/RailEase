@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(auth|trains|api|booking|food|help)/(.*)",
+      "dest": "backend/server.js"
+    },
+    {
+      "src": "/(.*)\\.(html|css|js|avif)",
+      "dest": "frontend/$1.$2"
+    },
+    {
+      "src": "/",
+      "dest": "frontend/index.html"
+    },
+    {
+      "src": "/login",
+      "dest": "frontend/login.html"
+    },
+    {
+      "src": "/dashboard",
+      "dest": "frontend/dashboard.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "backend/server.js"
+    }
+  ]
+}
+

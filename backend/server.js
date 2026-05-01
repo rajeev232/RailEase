@@ -45,11 +45,16 @@ mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log("MongoDB connected successfully.");
-    app.listen(PORT, () => {
-          console.log(`Server running on http://localhost:${PORT}`);
-    });
+    if (process.env.NODE_ENV !== 'production') {
+      app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+      });
+    }
   })
   .catch((error) => {
     console.error("MongoDB connection failed:", error.message);
-    process.exit(1);
+    // In serverless, we might not want to exit immediately as it might be a transient error
+    // but for now keeping it as is or removing exit for Vercel
   });
+
+module.exports = app;
