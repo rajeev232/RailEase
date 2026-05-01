@@ -5,17 +5,17 @@ const getFoodItems = async (req, res) => {
 };
 
 const placeFoodOrder = async (req, res) => {
-  const { items, customerName, trainNumber } = req.body;
+  const { items, customerName, trainNumber, utr } = req.body;
 
-  if (!items || !items.length || !customerName || !trainNumber) {
-    return res.status(400).json({ message: "Order details are incomplete." });
+  if (!items || !items.length || !customerName || !trainNumber || !utr) {
+    return res.status(400).json({ message: "Order details are incomplete. UTR is required." });
   }
 
   return res.status(201).json({
-    message: "Food order placed successfully.",
+    message: "We will check and after that proceed the order",
     orderId: `FOOD-${Date.now()}`,
-    status: "Preparing",
-    eta: "20-25 min"
+    status: "Payment Pending Verification",
+    eta: "TBD"
   });
 };
 
