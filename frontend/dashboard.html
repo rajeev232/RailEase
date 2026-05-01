@@ -203,6 +203,21 @@
                 </label>
                 <button class="primary-btn full-width" type="submit">Place Food Order</button>
               </form>
+
+              <div id="foodPaymentSection" class="form compact-form" style="display: none; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px;">
+                <h4 style="margin-bottom: 10px;">Payment Step</h4>
+                <p class="subtle-text">Pay here: <strong>7033345087@pthdfc</strong></p>
+                <div id="upiQrContainer" style="text-align: center; margin: 15px 0;">
+                  <!-- QR Code will be injected here -->
+                </div>
+                <label>
+                  Enter 12-digit UTR
+                  <input type="text" id="foodUTR" placeholder="Enter 12 digit UTR" maxlength="12" required />
+                </label>
+                <button class="primary-btn full-width" type="button" onclick="submitFoodOrderWithPayment()">Confirm Payment & Place Order</button>
+                <button class="ghost-btn full-width" type="button" onclick="cancelPayment()" style="margin-top: 10px;">Back to Cart</button>
+              </div>
+
               <div id="foodOrderStatus" class="status-box empty-state">Order status will appear here.</div>
             </div>
           </div>

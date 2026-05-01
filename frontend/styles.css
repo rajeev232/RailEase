@@ -314,3 +314,36 @@ body[data-page="landing"] {
     linear-gradient(rgba(10,15,30,0.8), rgba(10,15,30,0.9)),
     url("amritbharat.avif") no-repeat center center / cover;
 }
+
+/* Loading Spinner */
+.loader {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-bottom-color: var(--primary);
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Animations */
+.animated {
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+}
+
+.fadeIn {
+  animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hidden { display: none !important; }

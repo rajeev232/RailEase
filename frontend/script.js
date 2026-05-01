@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://railease-1-jq30.onrender.com";
+const API_BASE_URL = "";
 
 const mockJourneys = [
   {
@@ -436,23 +436,92 @@ async function handleBooking(event) {
 async function handlePnrCheck(event) {
   event.preventDefault();
   const pnr = document.getElementById("pnrInput").value.trim();
+  const resultContainer = document.getElementById("pnrResult");
 
-  if (!/^\d{6,10}$/.test(pnr)) {
-    showToast("Enter a valid PNR number.");
+  if (pnr.length !== 10 || isNaN(pnr)) {
+    showToast("Enter a valid 10-digit PNR number.");
     return;
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/pnr/${pnr}`);
+    // Show loading state
+    resultContainer.innerHTML = `
+      <div class="loader-container" style="text-align: center; padding: 20px;">
+        <div class="loader"></div>
+        <p class="subtle-text" style="margin-top: 10px;">Fetching PNR details from live servers...</p>
+      </div>
+    `;
+
+    // Simulate real API delay (1.5 seconds)
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    console.log(`Fetching from: ${API_BASE_URL}/api/pnr/${pnr}`);
+    const response = await fetch(`${API_BASE_URL}/api/pnr/${pnr}`);
+    
+    // Check if response is JSON
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      throw new Error("Invalid response format");
+    }
+
     const data = await response.json();
-    document.getElementById("pnrResult").innerHTML = `
-      <p><strong>Status:</strong> ${data.status}</p>
-      <p><strong>Coach:</strong> ${data.coach}</p>
-      <p><strong>Seat:</strong> ${data.seat}</p>
-      <p><strong>Train:</strong> ${data.trainName}</p>
+    
+    // Hybrid Logic: If API fails, data is empty, or errorMsg exists, trigger fallback
+    if (!response.ok || !data || data.errorMsg || !data.trainName || data.trainName === "N/A") {
+      throw new Error("Reliable live data unavailable");
+    }
+
+    // Success Case: Render the result
+    resultContainer.innerHTML = `
+      <div class="pnr-details animated fadeIn">
+        <h4 style="color: var(--primary); margin-bottom: 12px;">${data.trainName} (${data.trainNumber})</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0; font-size: 0.9em;">
+          <div class="meta-item"><strong>From:</strong> ${data.fromStation}</div>
+          <div class="meta-item"><strong>To:</strong> ${data.toStation}</div>
+          <div class="meta-item"><strong>Departure:</strong> ${data.departureDate}</div>
+          <div class="meta-item"><strong>Arrival:</strong> ${data.arrivalDate}</div>
+          <div class="meta-item"><strong>Class:</strong> ${data.journeyClass}</div>
+          <div class="meta-item"><strong>Status:</strong> ${data.chartStatus}</div>
+        </div>
+        
+        <div class="passenger-list" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+          <strong style="display: block; margin-bottom: 10px;">Passenger Breakdown:</strong>
+          ${data.passengers.map((p) => `
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85em; margin-bottom: 8px; padding: 8px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border);">
+              <span>${p.name}</span>
+              <span style="font-weight: 600;">${p.seat} <span class="badge" style="background: var(--primary); color: white; padding: 3px 8px; border-radius: 4px; margin-left: 8px; font-size: 0.8em;">${p.status}</span></span>
+            </div>
+          `).join("")}
+        </div>
+
+        <div style="margin-top: 20px; text-align: center;">
+          <button class="ghost-btn full-width" style="font-size: 0.85em;" onclick="window.open('https://www.irctc.co.in/nget/enquiry/pnr-enquiry', '_blank')">
+            Verify on IRCTC Official Site
+          </button>
+        </div>
+      </div>
     `;
   } catch (error) {
-    showToast("Unable to fetch PNR status.");
+    console.warn("PNR Fetch Error, triggering fallback:", error.message);
+    
+    // Fallback UI
+    resultContainer.innerHTML = `
+      <div class="fallback-container animated fadeIn" style="text-align: center; padding: 10px;">
+        <div style="margin-bottom: 15px; color: var(--text-light);">
+          <p><strong>Live PNR data could not be verified.</strong></p>
+          <p style="font-size: 0.85em; margin-top: 5px;">Please check the official Indian Railways or IRCTC source for the most accurate information.</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="primary-btn full-width" onclick="window.open('https://www.indianrail.gov.in/enquiry/PNR/PnrEnquiry.html?pnr=${pnr}', '_blank')">
+            Check Official Status (Direct)
+          </button>
+          <button class="secondary-btn full-width" onclick="window.open('https://www.irctc.co.in/nget/enquiry/pnr-enquiry', '_blank')">
+            Verify via IRCTC Portal
+          </button>
+        </div>
+        <p class="subtle-text" style="margin-top: 10px; font-size: 0.75em;">You will be redirected to the official government portal.</p>
+      </div>
+    `;
   }
 }
 
@@ -539,11 +608,38 @@ async function handleFoodOrder(event) {
     return;
   }
 
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  const upiId = "7033345087@pthdfc";
+  const upiUrl = `upi://pay?pa=${upiId}&pn=RailEase&am=${total}&cu=INR`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiUrl)}`;
+
+  document.getElementById("upiQrContainer").innerHTML = `<img src="${qrUrl}" alt="UPI QR Code" style="border: 4px solid white; border-radius: 8px;" />`;
+  document.getElementById("foodOrderForm").style.display = "none";
+  document.getElementById("foodPaymentSection").style.display = "block";
+  showToast(`Total Amount: Rs. ${total}. Please pay to proceed.`);
+}
+
+window.cancelPayment = function cancelPayment() {
+  document.getElementById("foodPaymentSection").style.display = "none";
+  document.getElementById("foodOrderForm").style.display = "block";
+};
+
+window.submitFoodOrderWithPayment = async function submitFoodOrderWithPayment() {
+  const cart = JSON.parse(localStorage.getItem("railCart") || "[]");
+  const customerName = document.getElementById("foodCustomerName").value.trim();
+  const trainNumber = document.getElementById("foodTrainNumber").value.trim();
+  const utr = document.getElementById("foodUTR").value.trim();
+
+  if (!utr || utr.length !== 12 || isNaN(utr)) {
+    showToast("Please enter a valid 12-digit UTR.");
+    return;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/food/order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: cart, customerName, trainNumber })
+      body: JSON.stringify({ items: cart, customerName, trainNumber, utr })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || "Food order failed.");
@@ -551,16 +647,21 @@ async function handleFoodOrder(event) {
     document.getElementById("foodOrderStatus").innerHTML = `
       <p><strong>Order ID:</strong> ${data.orderId}</p>
       <p><strong>Status:</strong> ${data.status}</p>
-      <p><strong>ETA:</strong> ${data.eta}</p>
+      <p><em>${data.message}</em></p>
     `;
+    
+    document.getElementById("foodPaymentSection").style.display = "none";
+    document.getElementById("foodOrderForm").style.display = "block";
+    document.getElementById("foodOrderForm").reset();
+    document.getElementById("foodUTR").value = "";
+    
     localStorage.removeItem("railCart");
     hydrateCart();
-    event.target.reset();
-    showToast("Food order placed successfully.");
+    showToast("Order placed. Awaiting payment verification.");
   } catch (error) {
     showToast(error.message);
   }
-}
+};
 
 async function fetchComplaintCategories() {
   const categorySelect = document.getElementById("helpCategory");
