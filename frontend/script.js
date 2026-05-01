@@ -26,9 +26,13 @@ const signupForm = document.getElementById("signupForm");
 if (isSignup === "true") {
   loginForm?.classList.remove("active");
   signupForm?.classList.add("active");
+  document.querySelector('.tab-btn[data-tab="login"]')?.classList.remove("active");
+  document.querySelector('.tab-btn[data-tab="signup"]')?.classList.add("active");
 } else {
   signupForm?.classList.remove("active");
   loginForm?.classList.add("active");
+  document.querySelector('.tab-btn[data-tab="signup"]')?.classList.remove("active");
+  document.querySelector('.tab-btn[data-tab="login"]')?.classList.add("active");
 }
 
 
@@ -64,7 +68,8 @@ function setupTabs() {
   const switchLinks = document.querySelectorAll(".switch-link");
 
   switchLinks.forEach((link) => {
-    link.addEventListener("click", () => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
       const target = link.dataset.switch;
 
       const targetBtn = document.querySelector(
@@ -145,22 +150,6 @@ function setupThemeToggle() {
     document.body.classList.toggle("dark");
     localStorage.setItem("railTheme", document.body.classList.contains("dark") ? "dark" : "light");
     syncLabel();
-  });
-}
-
-function setupTabs() {
-  const buttons = document.querySelectorAll(".tab-btn");
-  if (!buttons.length) return;
-
-  buttons.forEach((button) => {
-    button.addEventListener("click", () => {
-      buttons.forEach((item) => item.classList.remove("active"));
-      button.classList.add("active");
-
-      document.querySelectorAll(".form[data-form]").forEach((form) => form.classList.remove("active"));
-      const activeForm = document.querySelector(`.form[data-form="${button.dataset.tab}"]`);
-      if (activeForm) activeForm.classList.add("active");
-    });
   });
 }
 
