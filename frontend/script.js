@@ -17,103 +17,36 @@ const mockJourneys = [
   }
 ];
 
-const params = new URLSearchParams(window.location.search);
-const isSignup = params.get("signup");
-const page = document.body.dataset.page;
-
-if (page === "auth") {
-  const loginForm = document.getElementById("loginForm");
-  const signupForm = document.getElementById("signupForm");
-
-  if (isSignup === "true") {
-    loginForm?.classList.remove("active");
-    signupForm?.classList.add("active");
-    document.querySelector('.tab-btn[data-tab="login"]')?.classList.remove("active");
-    document.querySelector('.tab-btn[data-tab="signup"]')?.classList.add("active");
-  } else {
-    signupForm?.classList.remove("active");
-    loginForm?.classList.add("active");
-    document.querySelector('.tab-btn[data-tab="signup"]')?.classList.remove("active");
-    document.querySelector('.tab-btn[data-tab="login"]')?.classList.add("active");
-  }
-}
-
-
 const seatOptions = ["A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"];
-function setupTabs() {
-  const buttons = document.querySelectorAll(".tab-btn");
-  if (!buttons.length) return;
 
-  buttons.forEach((button) => {
-    button.addEventListener("click", () => {
-      
-      buttons.forEach((item) => item.classList.remove("active"));
-
-      
-      button.classList.add("active");
-
-      
-      document.querySelectorAll(".form[data-form]").forEach((form) => {
-        form.classList.remove("active");
-      });
-
-      
-      const activeForm = document.querySelector(
-        `.form[data-form="${button.dataset.tab}"]`
-      );
-
-      if (activeForm) activeForm.classList.add("active");
-    });
-  });
-
-  
-  const switchLinks = document.querySelectorAll(".switch-link");
-
-  switchLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const target = link.dataset.switch;
-
-      const targetBtn = document.querySelector(
-        `.tab-btn[data-tab="${target}"]`
-      );
-
-      if (targetBtn) targetBtn.click();
-    });
-  });
-}
-
-function startTrainFacts() {
-  const facts = [
-    "🚆 Indian Railways is the 4th largest railway network in the world.",
-    "🚄 Vande Bharat trains reach speeds up to 160 km/h.",
-    "🌉 Chenab Bridge is the highest railway bridge in the world.",
-    "🚉 India has over 7,000 railway stations.",
-    "🛤️ Longest train route in India is over 4,200 km."
-  ];
-
-  let index = 0;
-  const factElement = document.getElementById("trainFact");
-
-  if (!factElement) return;
-
-  setInterval(() => {
-    factElement.classList.add("fade");
-
-    setTimeout(() => {
-      index = (index + 1) % facts.length;
-      factElement.textContent = facts[index];
-      factElement.classList.remove("fade");
-    }, 500);
-
-  }, 5000);
-}
 document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const isSignup = params.get("signup");
+  const page = document.body.dataset.page;
+
+  // Initial Form Selection for Auth Page
+  if (page === "auth") {
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const loginTab = document.querySelector('.tab-btn[data-tab="login"]');
+    const signupTab = document.querySelector('.tab-btn[data-tab="signup"]');
+
+    if (isSignup === "true") {
+      loginForm?.classList.remove("active");
+      signupForm?.classList.add("active");
+      loginTab?.classList.remove("active");
+      signupTab?.classList.add("active");
+    } else {
+      signupForm?.classList.remove("active");
+      loginForm?.classList.add("active");
+      signupTab?.classList.remove("active");
+      loginTab?.classList.add("active");
+    }
+  }
+
   applyTheme();
   setupThemeToggle();
-
   setupTabs(); 
-
   setupNotifications();
 
   if (page === "auth") {
@@ -132,6 +65,63 @@ document.addEventListener("DOMContentLoaded", () => {
     hydrateCart();
   }
 });
+
+function setupTabs() {
+  const buttons = document.querySelectorAll(".tab-btn");
+  if (!buttons.length) return;
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      buttons.forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+
+      document.querySelectorAll(".form[data-form]").forEach((form) => {
+        form.classList.remove("active");
+      });
+
+      const activeForm = document.querySelector(
+        `.form[data-form="${button.dataset.tab}"]`
+      );
+
+      if (activeForm) activeForm.classList.add("active");
+    });
+  });
+
+  const switchLinks = document.querySelectorAll(".switch-link");
+  switchLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const target = link.dataset.switch;
+      const targetBtn = document.querySelector(`.tab-btn[data-tab="${target}"]`);
+      if (targetBtn) targetBtn.click();
+    });
+  });
+}
+
+function startTrainFacts() {
+  const facts = [
+    "🚆 Indian Railways is the 4th largest railway network in the world.",
+    "🚄 Vande Bharat trains reach speeds up to 160 km/h.",
+    "🌉 Chenab Bridge is the highest railway bridge in the world.",
+    "🚉 India has over 7,000 railway stations.",
+    "🛤️ Longest train route in India is over 4,200 km."
+  ];
+
+  let index = 0;
+  const factElement = document.getElementById("trainFact");
+  if (!factElement) return;
+
+  setInterval(() => {
+    factElement.classList.add("fade");
+    setTimeout(() => {
+      index = (index + 1) % facts.length;
+      const factP = factElement.querySelector('p');
+      if (factP) factP.textContent = facts[index];
+      factElement.classList.remove("fade");
+    }, 500);
+  }, 5000);
+}
+
 function applyTheme() {
   const theme = localStorage.getItem("railTheme");
   if (theme === "dark") {
@@ -172,12 +162,10 @@ function bindAuthForms() {
     event.preventDefault();
     const formData = new FormData(loginForm);
     const payload = Object.fromEntries(formData.entries());
-
     if (!validateEmail(payload.email)) {
       showToast("Enter a valid email address.");
       return;
     }
-
     await handleAuthRequest("/auth/login", payload);
   });
 
@@ -185,22 +173,18 @@ function bindAuthForms() {
     event.preventDefault();
     const formData = new FormData(signupForm);
     const payload = Object.fromEntries(formData.entries());
-
     if (!validateEmail(payload.email)) {
       showToast("Enter a valid email address.");
       return;
     }
-
     if (!/^\d{10}$/.test(payload.mobile)) {
       showToast("Enter a valid 10-digit mobile number.");
       return;
     }
-
     if (payload.password.length < 6) {
       showToast("Password must be at least 6 characters.");
       return;
     }
-
     await handleAuthRequest("/auth/signup", payload);
   });
 }
@@ -220,7 +204,7 @@ async function handleAuthRequest(endpoint, payload) {
     localStorage.setItem("railUser", JSON.stringify(data.user));
     showToast(data.message);
     window.setTimeout(() => {
-      window.location.href = "./dashboard.html";
+      window.location.href = "/dashboard.html";
     }, 800);
   } catch (error) {
     showToast(error.message);
@@ -232,7 +216,7 @@ function protectDashboard() {
   if (!user) {
     showToast("Please login to access the dashboard.");
     window.setTimeout(() => {
-      window.location.href = "./login.html";
+      window.location.href = "/login.html";
     }, 700);
   }
 }
@@ -290,7 +274,7 @@ function bindDashboardActions() {
     localStorage.removeItem("railUser");
     showToast("Logged out successfully.");
     window.setTimeout(() => {
-      window.location.href = "./login.html";
+      window.location.href = "/login.html";
     }, 700);
   });
 }
@@ -338,14 +322,18 @@ function renderTrainResults(trains) {
 
 window.selectTrain = function selectTrain(train) {
   localStorage.setItem("selectedTrain", JSON.stringify(train));
-  document.getElementById("selectedTrainId").value = train.id;
-  document.getElementById("selectedTrainSummary").innerHTML = `
-    <h3>${train.name}</h3>
-    <p>${train.source} to ${train.destination}</p>
-    <p>${train.departure} to ${train.arrival}</p>
-    <p><strong>Rs. ${train.price}</strong></p>
-  `;
-  document.getElementById("bookingSection").scrollIntoView({ behavior: "smooth" });
+  const trainIdInput = document.getElementById("selectedTrainId");
+  if(trainIdInput) trainIdInput.value = train.id;
+  const summary = document.getElementById("selectedTrainSummary");
+  if(summary) {
+    summary.innerHTML = `
+      <h3>${train.name}</h3>
+      <p>${train.source} to ${train.destination}</p>
+      <p>${train.departure} to ${train.arrival}</p>
+      <p><strong>Rs. ${train.price}</strong></p>
+    `;
+  }
+  document.getElementById("bookingSection")?.scrollIntoView({ behavior: "smooth" });
   showToast(`${train.name} selected for booking.`);
 };
 
@@ -365,7 +353,6 @@ function renderSeatMap() {
 
 async function handleBooking(event) {
   event.preventDefault();
-
   const selectedTrain = JSON.parse(localStorage.getItem("selectedTrain") || "null");
   const selectedSeat = document.querySelector(".seat.selected")?.dataset.seat;
   const user = getStoredUser();
@@ -374,15 +361,14 @@ async function handleBooking(event) {
     showToast("Please select a train first.");
     return;
   }
-
   if (!selectedSeat) {
     showToast("Please choose a seat.");
     return;
   }
 
-  const passengerName = document.getElementById("passengerName").value.trim();
-  const passengerAge = document.getElementById("passengerAge").value;
-  const journeyDate = document.getElementById("journeyDate").value;
+  const passengerName = document.getElementById("passengerName")?.value.trim();
+  const passengerAge = document.getElementById("passengerAge")?.value;
+  const journeyDate = document.getElementById("journeyDate")?.value;
 
   if (!passengerName || !passengerAge || !journeyDate) {
     showToast("Please complete booking details.");
@@ -408,14 +394,17 @@ async function handleBooking(event) {
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || "Booking failed.");
 
-    document.getElementById("bookingConfirmation").classList.remove("hidden");
-    document.getElementById("bookingConfirmation").innerHTML = `
-      <h3>Booking Confirmation</h3>
-      <p><strong>PNR:</strong> ${data.booking.pnr}</p>
-      <p><strong>Status:</strong> ${data.booking.bookingStatus}</p>
-      <p><strong>Coach/Seat:</strong> ${data.booking.passenger.seat}</p>
-      <p><strong>Journey:</strong> ${data.booking.source} to ${data.booking.destination}</p>
-    `;
+    const confirmation = document.getElementById("bookingConfirmation");
+    if(confirmation) {
+        confirmation.classList.remove("hidden");
+        confirmation.innerHTML = `
+          <h3>Booking Confirmation</h3>
+          <p><strong>PNR:</strong> ${data.booking.pnr}</p>
+          <p><strong>Status:</strong> ${data.booking.bookingStatus}</p>
+          <p><strong>Coach/Seat:</strong> ${data.booking.passenger.seat}</p>
+          <p><strong>Journey:</strong> ${data.booking.source} to ${data.booking.destination}</p>
+        `;
+    }
     showToast("Booking confirmed successfully.");
     event.target.reset();
     renderSeatMap();
@@ -435,34 +424,22 @@ async function handlePnrCheck(event) {
   }
 
   try {
-    // Show loading state
     resultContainer.innerHTML = `
       <div class="loader-container" style="text-align: center; padding: 20px;">
         <div class="loader"></div>
         <p class="subtle-text" style="margin-top: 10px;">Fetching PNR details from live servers...</p>
       </div>
     `;
-
-    // Simulate real API delay (1.5 seconds)
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    console.log(`Fetching from: ${API_BASE_URL}/api/pnr/${pnr}`);
     const response = await fetch(`${API_BASE_URL}/api/pnr/${pnr}`);
-    
-    // Check if response is JSON
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
       throw new Error("Invalid response format");
     }
-
     const data = await response.json();
-    
-    // Hybrid Logic: If API fails, data is empty, or errorMsg exists, trigger fallback
     if (!response.ok || !data || data.errorMsg || !data.trainName || data.trainName === "N/A") {
       throw new Error("Reliable live data unavailable");
     }
-
-    // Success Case: Render the result
     resultContainer.innerHTML = `
       <div class="pnr-details animated fadeIn">
         <h4 style="color: var(--primary); margin-bottom: 12px;">${data.trainName} (${data.trainNumber})</h4>
@@ -474,7 +451,6 @@ async function handlePnrCheck(event) {
           <div class="meta-item"><strong>Class:</strong> ${data.journeyClass}</div>
           <div class="meta-item"><strong>Status:</strong> ${data.chartStatus}</div>
         </div>
-        
         <div class="passenger-list" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
           <strong style="display: block; margin-bottom: 10px;">Passenger Breakdown:</strong>
           ${data.passengers.map((p) => `
@@ -484,7 +460,6 @@ async function handlePnrCheck(event) {
             </div>
           `).join("")}
         </div>
-
         <div style="margin-top: 20px; text-align: center;">
           <button class="ghost-btn full-width" style="font-size: 0.85em;" onclick="window.open('https://www.irctc.co.in/nget/enquiry/pnr-enquiry', '_blank')">
             Verify on IRCTC Official Site
@@ -493,9 +468,6 @@ async function handlePnrCheck(event) {
       </div>
     `;
   } catch (error) {
-    console.warn("PNR Fetch Error, triggering fallback:", error.message);
-    
-    // Fallback UI
     resultContainer.innerHTML = `
       <div class="fallback-container animated fadeIn" style="text-align: center; padding: 10px;">
         <div style="margin-bottom: 15px; color: var(--text-light);">
@@ -519,12 +491,10 @@ async function handlePnrCheck(event) {
 function handleTrainTrack(event) {
   event.preventDefault();
   const trainNumber = document.getElementById("trackTrainNumber").value.trim();
-
   if (!trainNumber) {
     showToast("Enter a train number.");
     return;
   }
-
   const delayed = Number(trainNumber.slice(-1)) % 2 === 0;
   document.getElementById("trackingResult").innerHTML = `
     <p><strong>Train Number:</strong> ${trainNumber}</p>
@@ -537,7 +507,6 @@ function handleTrainTrack(event) {
 async function fetchFoodItems() {
   const container = document.getElementById("foodList");
   if (!container) return;
-
   try {
     const response = await fetch(`${API_BASE_URL}/food`);
     const data = await response.json();
@@ -579,7 +548,6 @@ function hydrateCart() {
     cartItems.innerHTML = "Your cart is empty.";
     return;
   }
-
   const total = cart.reduce((sum, item) => sum + item.price, 0);
   cartItems.innerHTML = `
     ${cart.map((item, index) => `<p>${index + 1}. ${item.name} - Rs. ${item.price}</p>`).join("")}
@@ -593,17 +561,14 @@ async function handleFoodOrder(event) {
   const cart = JSON.parse(localStorage.getItem("railCart") || "[]");
   const customerName = document.getElementById("foodCustomerName").value.trim();
   const trainNumber = document.getElementById("foodTrainNumber").value.trim();
-
   if (!cart.length) {
     showToast("Add at least one food item.");
     return;
   }
-
   const total = cart.reduce((sum, item) => sum + item.price, 0);
   const upiId = "7033345087@pthdfc";
   const upiUrl = `upi://pay?pa=${upiId}&pn=RailEase&am=${total}&cu=INR`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiUrl)}`;
-
   document.getElementById("upiQrContainer").innerHTML = `<img src="${qrUrl}" alt="UPI QR Code" style="border: 4px solid white; border-radius: 8px;" />`;
   document.getElementById("foodOrderForm").style.display = "none";
   document.getElementById("foodPaymentSection").style.display = "block";
@@ -620,12 +585,10 @@ window.submitFoodOrderWithPayment = async function submitFoodOrderWithPayment() 
   const customerName = document.getElementById("foodCustomerName").value.trim();
   const trainNumber = document.getElementById("foodTrainNumber").value.trim();
   const utr = document.getElementById("foodUTR").value.trim();
-
   if (!utr || utr.length !== 12 || isNaN(utr)) {
     showToast("Please enter a valid 12-digit UTR.");
     return;
   }
-
   try {
     const response = await fetch(`${API_BASE_URL}/food/order`, {
       method: "POST",
@@ -634,18 +597,15 @@ window.submitFoodOrderWithPayment = async function submitFoodOrderWithPayment() 
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || "Food order failed.");
-
     document.getElementById("foodOrderStatus").innerHTML = `
       <p><strong>Order ID:</strong> ${data.orderId}</p>
       <p><strong>Status:</strong> ${data.status}</p>
       <p><em>${data.message}</em></p>
     `;
-    
     document.getElementById("foodPaymentSection").style.display = "none";
     document.getElementById("foodOrderForm").style.display = "block";
     document.getElementById("foodOrderForm").reset();
     document.getElementById("foodUTR").value = "";
-    
     localStorage.removeItem("railCart");
     hydrateCart();
     showToast("Order placed. Awaiting payment verification.");
@@ -657,7 +617,6 @@ window.submitFoodOrderWithPayment = async function submitFoodOrderWithPayment() 
 async function fetchComplaintCategories() {
   const categorySelect = document.getElementById("helpCategory");
   if (!categorySelect) return;
-
   try {
     const response = await fetch(`${API_BASE_URL}/help/categories`);
     const data = await response.json();
@@ -676,12 +635,10 @@ async function handleHelpRequest(event) {
   const category = document.getElementById("helpCategory").value;
   const trainNumber = document.getElementById("helpTrainNumber").value.trim();
   const message = document.getElementById("helpMessage").value.trim();
-
   if (!category || !trainNumber || !message) {
     showToast("Please complete the complaint form.");
     return;
   }
-
   try {
     const response = await fetch(`${API_BASE_URL}/help`, {
       method: "POST",
@@ -690,7 +647,6 @@ async function handleHelpRequest(event) {
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || "Complaint submission failed.");
-
     document.getElementById("helpStatus").innerHTML = `
       <p><strong>Category:</strong> ${data.complaint.category}</p>
       <p><strong>Status:</strong> ${data.complaint.status}</p>
@@ -715,13 +671,9 @@ function validateEmail(email) {
 function showToast(message) {
   const container = document.getElementById("toastContainer");
   if (!container) return;
-
   const toast = document.createElement("div");
   toast.className = "toast";
   toast.textContent = message;
   container.appendChild(toast);
-
-  window.setTimeout(() => {
-    toast.remove();
-  }, 3000);
+  window.setTimeout(() => { toast.remove(); }, 3000);
 }
