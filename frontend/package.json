@@ -1,0 +1,11 @@
+{
+  "name": "railease-frontend",
+  "version": "1.0.0",
+  "description": "RailEase Frontend",
+  "scripts": {
+    "start": "serve ."
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}
