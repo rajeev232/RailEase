@@ -19,25 +19,27 @@ const mockJourneys = [
 
 const params = new URLSearchParams(window.location.search);
 const isSignup = params.get("signup");
+const page = document.body.dataset.page;
 
-const loginForm = document.getElementById("loginForm");
-const signupForm = document.getElementById("signupForm");
+if (page === "auth") {
+  const loginForm = document.getElementById("loginForm");
+  const signupForm = document.getElementById("signupForm");
 
-if (isSignup === "true") {
-  loginForm?.classList.remove("active");
-  signupForm?.classList.add("active");
-  document.querySelector('.tab-btn[data-tab="login"]')?.classList.remove("active");
-  document.querySelector('.tab-btn[data-tab="signup"]')?.classList.add("active");
-} else {
-  signupForm?.classList.remove("active");
-  loginForm?.classList.add("active");
-  document.querySelector('.tab-btn[data-tab="signup"]')?.classList.remove("active");
-  document.querySelector('.tab-btn[data-tab="login"]')?.classList.add("active");
+  if (isSignup === "true") {
+    loginForm?.classList.remove("active");
+    signupForm?.classList.add("active");
+    document.querySelector('.tab-btn[data-tab="login"]')?.classList.remove("active");
+    document.querySelector('.tab-btn[data-tab="signup"]')?.classList.add("active");
+  } else {
+    signupForm?.classList.remove("active");
+    loginForm?.classList.add("active");
+    document.querySelector('.tab-btn[data-tab="signup"]')?.classList.remove("active");
+    document.querySelector('.tab-btn[data-tab="login"]')?.classList.add("active");
+  }
 }
 
 
 const seatOptions = ["A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"];
-const page = document.body.dataset.page;
 function setupTabs() {
   const buttons = document.querySelectorAll(".tab-btn");
   if (!buttons.length) return;
