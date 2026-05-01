@@ -45,11 +45,9 @@ mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log("MongoDB connected successfully.");
-    if (process.env.NODE_ENV !== 'production') {
-      app.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
-      });
-    }
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT} (env: ${process.env.NODE_ENV || 'development'})`);
+    });
   })
   .catch((error) => {
     console.error("MongoDB connection failed:", error.message);
