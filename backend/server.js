@@ -18,18 +18,24 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/rail-super
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/auth", authRoutes);
+app.use("/trains", trainRoutes);
+app.use("/api/pnr", pnrRoutes);
+app.use("/booking", bookingRoutes);
+app.use("/food", foodRoutes);
+app.use("/help", helpRoutes);
+
 app.use(express.static(path.join(__dirname, "..", "frontend")));
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({ message: "Rail Super App API is running." });
 });
 
-app.use("/auth", authRoutes);
-app.use("/trains", trainRoutes);
-app.use("/pnr", pnrRoutes);
-app.use("/booking", bookingRoutes);
-app.use("/food", foodRoutes);
-app.use("/help", helpRoutes);
+// Catch-all for undefined API routes
+app.use("/api/*", (req, res) => {
+  res.status(404).json({ message: `API route ${req.originalUrl} not found.` });
+});
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "frontend", "index.html"));
