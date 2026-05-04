@@ -28,12 +28,26 @@ app.use("/help", helpRoutes);
 
 app.use(express.static(path.join(__dirname, "..", "frontend")));
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "frontend", "index.html"));
+});
+
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "frontend", "login.html"));
+});
+
+app.get("/dashboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "frontend", "dashboard.html"));
+});
+
+console.log(`Frontend assets being served from: ${path.join(__dirname, "..", "frontend")}`);
+
 app.get("/api/health", (req, res) => {
   res.status(200).json({ message: "Rail Super App API is running." });
 });
 
 // Catch-all for undefined API routes
-app.use("/api/*", (req, res) => {
+app.use("/api/*path", (req, res) => {
   res.status(404).json({ message: `API route ${req.originalUrl} not found.` });
 });
 

@@ -394,24 +394,86 @@ async function handleBooking(event) {
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || "Booking failed.");
 
-    const confirmation = document.getElementById("bookingConfirmation");
-    if(confirmation) {
-        confirmation.classList.remove("hidden");
-        confirmation.innerHTML = `
-          <h3>Booking Confirmation</h3>
-          <p><strong>PNR:</strong> ${data.booking.pnr}</p>
-          <p><strong>Status:</strong> ${data.booking.bookingStatus}</p>
-          <p><strong>Coach/Seat:</strong> ${data.booking.passenger.seat}</p>
-          <p><strong>Journey:</strong> ${data.booking.source} to ${data.booking.destination}</p>
-        `;
-    }
-    showToast("Booking confirmed successfully.");
-    event.target.reset();
-    renderSeatMap();
+    // Store booking info for payment step
+    localStorage.setItem("pendingBooking", JSON.stringify(data.booking));
+
+    // Show Payment Section
+    const upiId = "7033345087@pthdfc";
+    const amount = selectedTrain.price;
+    const upiUrl = `upi://pay?pa=${upiId}&pn=RailEase&am=${amount}&cu=INR`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiUrl)}`;
+    
+    document.getElementById("bookingUpiQrContainer").innerHTML = `<img src="${qrUrl}" alt="Ticket Payment QR Code" style="border: 4px solid white; border-radius: 8px;" />`;
+    document.getElementById("bookingPaymentSection").style.display = "block";
+    document.getElementById("bookingForm").style.opacity = "0.5";
+    document.getElementById("bookingForm").style.pointerEvents = "none";
+    
+    showToast(`Booking initiated. Please pay Rs. ${amount} to confirm.`);
   } catch (error) {
     showToast(error.message);
   }
 }
+
+window.cancelBookingPayment = function cancelBookingPayment() {
+  document.getElementById("bookingPaymentSection").style.display = "none";
+  document.getElementById("bookingForm").style.opacity = "1";
+  document.getElementById("bookingForm").style.pointerEvents = "auto";
+  localStorage.removeItem("pendingBooking");
+};
+
+window.submitBookingPayment = async function submitBookingPayment() {
+  const booking = JSON.parse(localStorage.getItem("pendingBooking") || "null");
+  const utr = document.getElementById("bookingUTR").value.trim();
+
+  if (!booking) {
+    showToast("No pending booking found.");
+    return;
+  }
+  if (!utr || utr.length !== 12 || isNaN(utr)) {
+    showToast("Please enter a valid 12-digit UTR.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/booking/confirm-payment`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookingId: booking._id, utrNumber: utr })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Payment confirmation failed.");
+
+    document.getElementById("bookingPaymentSection").style.display = "none";
+    document.getElementById("bookingForm").style.opacity = "1";
+    document.getElementById("bookingForm").style.pointerEvents = "auto";
+    document.getElementById("bookingForm").reset();
+
+    const confirmation = document.getElementById("bookingConfirmation");
+    if(confirmation) {
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data.booking.pnr)}`;
+        confirmation.classList.remove("hidden");
+        confirmation.innerHTML = `
+          <h3>Booking Confirmation</h3>
+          <div style="text-align: center; margin-bottom: 15px;">
+            <img src="${qrUrl}" alt="Booking QR Code" style="border: 4px solid white; border-radius: 8px;" />
+          </div>
+          <p><strong>PNR:</strong> ${data.booking.pnr}</p>
+          <p><strong>Status:</strong> ${data.booking.paymentStatus}</p>
+          <p><strong>Coach/Seat:</strong> ${data.booking.passenger.seat}</p>
+          <p><strong>Journey:</strong> ${data.booking.source} to ${data.booking.destination}</p>
+          <p style="color: var(--primary); font-size: 0.9em; margin-top: 10px;"><em>Your payment is being processed.</em></p>
+        `;
+        confirmation.scrollIntoView({ behavior: "smooth" });
+    }
+    
+    localStorage.removeItem("pendingBooking");
+    showToast("Payment submitted. Awaiting verification.");
+    renderSeatMap();
+  } catch (error) {
+    showToast(error.message);
+  }
+};
 
 async function handlePnrCheck(event) {
   event.preventDefault();
