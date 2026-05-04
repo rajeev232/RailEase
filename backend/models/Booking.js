@@ -19,7 +19,8 @@ const bookingSchema = new mongoose.Schema(
     journeyDate: String,
     price: Number,
     passenger: passengerSchema,
-    bookingStatus: { type: String, default: "Confirmed" },
+    paymentStatus: { type: String, enum: ["Pending", "Processing", "Confirmed"], default: "Pending" },
+    utrNumber: { type: String },
     pnr: { type: String, required: true }
   },
   { timestamps: true }

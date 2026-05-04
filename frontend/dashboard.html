@@ -130,6 +130,21 @@
             <div class="card summary-card">
               <h3>Selected Train</h3>
               <div id="selectedTrainSummary" class="empty-state">Search and choose a train to start booking.</div>
+              
+              <div id="bookingPaymentSection" class="form compact-form" style="display: none; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px;">
+                <h4 style="margin-bottom: 10px;">Payment for Ticket</h4>
+                <p class="subtle-text">Pay here: <strong>7033345087@pthdfc</strong></p>
+                <div id="bookingUpiQrContainer" style="text-align: center; margin: 15px 0;">
+                  <!-- QR Code will be injected here -->
+                </div>
+                <label>
+                  Enter 12-digit UTR
+                  <input type="text" id="bookingUTR" placeholder="Enter 12 digit UTR" maxlength="12" required />
+                </label>
+                <button class="primary-btn full-width" type="button" onclick="submitBookingPayment()">Confirm Payment & Book</button>
+                <button class="ghost-btn full-width" type="button" onclick="cancelBookingPayment()" style="margin-top: 10px;">Cancel</button>
+              </div>
+
               <div id="bookingConfirmation" class="confirmation-box hidden"></div>
             </div>
           </div>

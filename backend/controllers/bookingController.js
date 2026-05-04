@@ -25,12 +25,43 @@ const createBooking = async (req, res) => {
       journeyDate,
       price: train.price,
       passenger,
+      paymentStatus: "Pending",
       pnr: generatePnr()
     });
 
-    return res.status(201).json({ message: "Booking confirmed.", booking });
+    return res.status(201).json({ message: "Booking initiated. Please complete payment.", booking });
   } catch (error) {
     return res.status(500).json({ message: "Failed to create booking.", error: error.message });
+  }
+};
+
+const confirmPayment = async (req, res) => {
+  try {
+    const { bookingId, utrNumber } = req.body;
+
+    if (!bookingId || !utrNumber) {
+      return res.status(400).json({ message: "Booking ID and UTR number are required." });
+    }
+
+    if (utrNumber.length !== 12 || isNaN(utrNumber)) {
+      return res.status(400).json({ message: "Invalid UTR. It must be a 12-digit number." });
+    }
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
+
+    booking.utrNumber = utrNumber;
+    booking.paymentStatus = "Processing";
+    await booking.save();
+
+    return res.status(200).json({ 
+      message: "Payment succeed. We will check and proceed and contact you", 
+      booking 
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to confirm payment.", error: error.message });
   }
 };
 
@@ -46,4 +77,4 @@ const getBookings = async (req, res) => {
   }
 };
 
-module.exports = { createBooking, getBookings };
+module.exports = { createBooking, getBookings, confirmPayment };
